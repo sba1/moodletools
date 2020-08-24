@@ -5,11 +5,22 @@
 
 import argparse
 import moodleutils
+import sys
 
 from typing import Set
 
 def main():
     parser = argparse.ArgumentParser(description='Manage Moodle remotes')
+    subparser = parser.add_subparsers(title='subcommand', dest='subcommand')
+
+    add_parser = subparser.add_parser('add')
+    add_parser.add_argument('name')
+    add_parser.add_argument('url')
+    add_parser.add_argument('--retrieve-token', action='store_true', help="Specifies whether the tokens are also retrieved from the given URL and added to the configuration. This requires the user to enter the credentials.")
+
+    rem_parser = subparser.add_parser('remove')
+    rem_parser.add_argument('name')
+
     args = parser.parse_args()
 
     config = moodleutils.config()
@@ -19,8 +30,26 @@ def main():
             remotes.add(config[key]['short'])
         else:
             remotes.add(key)
-    sorted_remotes = sorted(remotes)
-    print("\n".join(sorted_remotes))
+
+    if args.subcommand is None:
+        sorted_remotes = sorted(remotes)
+        print("\n".join(sorted_remotes))
+    elif args.subcommand == 'add':
+        # Bailout, if name or url is already known
+        if moodleutils.config_resolve_key(config, args.name) is not None:
+            sys.exit("A remote with name '{0}' does already exist.".format(args.name))
+        if moodleutils.config_resolve_key(config, args.url) is not None:
+            sys.exit("A remote pointing to '{0}' does already exist.".format(args.url))
+
+        config[args.url] = {}
+        config[args.url]['short'] = args.name
+
+        if args.retrieve_token:
+            config[args.url]['local_mobile_token'] = moodleutils.get_token(args.url, 'local_mobile')
+
+        moodleutils.store_config(config)
+    elif args.subcommand == 'remove':
+        config = moodleutils.rem_remote(args.name)
 
 if __name__ == "__main__":
     main()
