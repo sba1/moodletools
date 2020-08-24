@@ -1,3 +1,6 @@
+The moodletools
+===============
+
 This is a client-side moodle command that can be used to gather various
 information about a remote Moodle installation.
 
