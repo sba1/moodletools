@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+#
+# Shows currently configured remotes
+#
+
+import argparse
+import moodleutils
+
+from typing import Set
+
+def main():
+    parser = argparse.ArgumentParser(description='Manage Moodle remotes')
+    args = parser.parse_args()
+
+    config = moodleutils.config()
+    remotes = set() # type: Set[str]
+    for key in config:
+        if 'short' in config[key]:
+            remotes.add(config[key]['short'])
+        else:
+            remotes.add(key)
+    sorted_remotes = sorted(remotes)
+    print("\n".join(sorted_remotes))
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+import argparse
+import moodleutils
+import os
+
+def main():
+    root = os.getcwd()
+
+    parser = argparse.ArgumentParser(description='List courses of a Moodle remote')
+    parser.add_argument('remote', help='Defines the name of the remote to use')
+    args = parser.parse_args()
+
+    config = moodleutils.config()
+
+    remote = args.remote
+
+    if not remote in config:
+        for r in config:
+            if config[r]['short'] == remote:
+                remote = r
+
+    site_info = moodleutils.callws(config[remote], remote, 'core_webservice_get_site_info')
+    if not site_info or 'userid' not in site_info:
+        sys.exit('Could not determine userid.')
+    userid = site_info['userid']
+
+    courses = moodleutils.callws(config[remote], remote, 'core_enrol_get_users_courses',
+            data={'userid':userid})
+    if not isinstance(courses, list):
+        sys.exit('core_enrol_get_users_courses did not return a list')
+    courses = sorted(courses, key=lambda c: c['id'])
+
+    for c in courses:
+        print("{0}\t{1}\t{2}".format(c['id'],c['shortname'],c['fullname']))
+
+if __name__ == "__main__":
+    main()
