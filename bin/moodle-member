@@ -48,7 +48,10 @@ def main():
     users = sorted(users, key=lambda c: c['id'])
 
     for u in users:
-        print("{0}\t{1}\t{2}".format(u['id'], u['fullname'], u['email']))
+        email = 'unknown'
+        if 'email' in u:
+            email = u['email']
+        print("{0}\t{1}\t{2}".format(u['id'], u['fullname'], email))
 
 if __name__ == "__main__":
     main()
