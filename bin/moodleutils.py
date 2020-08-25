@@ -36,7 +36,7 @@ def store_config(config : Dict[str, Dict[str, str]]) -> None:
     with open(os.path.join(save_path, 'moodlecli.ini'), 'w') as cfgfile:
         cfg.write(cfgfile)
 
-def config_resolve_key(config : Dict[str, Dict[str, str]], remote : str) -> Optional[str]:
+def config_resolve_remote(config : Dict[str, Dict[str, str]], remote : str) -> Optional[str]:
     """Tries to resolve the given remote name to the primary URL"""
     if remote in config:
         return remote
@@ -49,7 +49,7 @@ def config_resolve_key(config : Dict[str, Dict[str, str]], remote : str) -> Opti
 
 def rem_remote(name:str) -> None:
     cfg = config()
-    key = config_resolve_key(cfg, name)
+    key = config_resolve_remote(cfg, name)
     if key is not None:
         del cfg[key]
         store_config(cfg)

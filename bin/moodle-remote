@@ -36,9 +36,9 @@ def main():
         print("\n".join(sorted_remotes))
     elif args.subcommand == 'add':
         # Bailout, if name or url is already known
-        if moodleutils.config_resolve_key(config, args.name) is not None:
+        if moodleutils.config_resolve_remote(config, args.name) is not None:
             sys.exit("A remote with name '{0}' does already exist.".format(args.name))
-        if moodleutils.config_resolve_key(config, args.url) is not None:
+        if moodleutils.config_resolve_remote(config, args.url) is not None:
             sys.exit("A remote pointing to '{0}' does already exist.".format(args.url))
 
         config[args.url] = {}
