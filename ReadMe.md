@@ -61,6 +61,7 @@ optional arguments:
 
 Available commands:
    course   Deal with Moodle courses
+   member   Manage course members
    remote   Manage Moodle remotes
 
 ```
