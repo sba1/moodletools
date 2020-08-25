@@ -13,12 +13,7 @@ def main():
 
     config = moodleutils.config()
 
-    remote = args.remote
-
-    if not remote in config:
-        for r in config:
-            if config[r]['short'] == remote:
-                remote = r
+    remote = moodleutils.config_resolve_remote(config, args.remote)
 
     site_info = moodleutils.callws(config[remote], remote, 'core_webservice_get_site_info')
     if not site_info or 'userid' not in site_info:
