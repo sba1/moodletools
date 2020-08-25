@@ -10,6 +10,12 @@ def main():
 
     parser = argparse.ArgumentParser(description='List courses of a Moodle remote')
     parser.add_argument('remote', help='Defines the name of the remote to use')
+    subparser = parser.add_subparsers(title='subcommand', dest='subcommand')
+
+    assignmentparser = subparser.add_parser('assignment')
+    assignmentparser.add_argument('course',
+        help='Define the id of the course from which to list the assignments')
+
     args = parser.parse_args()
 
     config = moodleutils.config()
@@ -27,8 +33,21 @@ def main():
         sys.exit('core_enrol_get_users_courses did not return a list')
     courses = sorted(courses, key=lambda c: c['id'])
 
-    for c in courses:
-        print("{0}\t{1}\t{2}".format(c['id'],c['shortname'],c['fullname']))
+    if args.subcommand == 'assignment':
+        assignments = moodleutils.callws(config[remote], remote, 'mod_assign_get_assignments',
+            data = {
+                    'courseids[0]':args.course,
+                }
+            )
+        if not isinstance(assignments, dict):
+            sys.exit('Unexpected result from mod_assign_get_assignments')
+        assignments = sorted(assignments['courses'][0]['assignments'],key=lambda a: a['id'])
+        for a in assignments:
+            print("{0}\t{1}".format(a['id'], a['name']))
+    elif not args.subcommand:
+        # Display all courses
+        for c in courses:
+            print("{0}\t{1}\t{2}".format(c['id'],c['shortname'],c['fullname']))
 
 if __name__ == "__main__":
     main()
