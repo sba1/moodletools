@@ -75,6 +75,11 @@ def get_token(url : str, service : str) -> Optional[str]:
     return page.json()['token']
 
 def callws(config : Dict[str,str], remote : str, wsfunction : str, data : Dict[str,str] = {}):
+    if 'local_mobile_token' not in config:
+        print('There is no local_mobile_token configured for remote {0}!'.format(
+            remote), file=sys.stderr)
+        return None
+
     page = requests.post(remote + '/webservice/rest/server.php',
             data = dict({
             'wstoken':config['local_mobile_token'],

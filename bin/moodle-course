@@ -3,6 +3,7 @@
 import argparse
 import moodleutils
 import os
+import sys
 
 def main():
     root = os.getcwd()
