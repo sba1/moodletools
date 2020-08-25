@@ -33,6 +33,7 @@ ignored_commands = set() # type: Set[str]
 def get_short_help(command:str) -> str:
 	short_help = {
 		"course": "Deal with Moodle courses",
+		"member": "Manage course members",
 		"remote": "Manage Moodle remotes",
 	}
 	try:

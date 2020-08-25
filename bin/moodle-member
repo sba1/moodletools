@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+import argparse
+import moodleutils
+import os
+import sys
+
+from typing import Dict
+
+def main():
+    root = os.getcwd()
+
+    parser = argparse.ArgumentParser(description='List courses of a Moodle remote')
+    parser.add_argument('remote', help='Defines the name of the remote to use')
+    parser.add_argument('course', help='Defines the course to query')
+    args = parser.parse_args()
+
+    config = moodleutils.config()
+
+    remote = moodleutils.config_resolve_remote(config, args.remote)
+
+    site_info = moodleutils.callws(config[remote], remote, 'core_webservice_get_site_info')
+    if not site_info or 'userid' not in site_info:
+        sys.exit('Could not determine userid.')
+    userid = site_info['userid']
+
+    courses = moodleutils.callws(config[remote], remote, 'core_enrol_get_users_courses',
+            data={'userid':userid})
+    if not isinstance(courses, list):
+        sys.exit('core_enrol_get_users_courses did not return a list')
+
+    courses_by_id = dict() # type: Dict[str,Dict[str,str]]
+    for c in courses:
+      if 'id' in c:
+        courses_by_id[c['id']] = c;
+
+    if int(args.course) not in courses_by_id:
+        sys.exit('Course {0} is not available'.format(args.course))
+
+    users = moodleutils.callws(config[remote], remote, 'core_enrol_get_enrolled_users',
+            data = {
+                'courseid':args.course,
+                }
+            )
+    if not isinstance(users, list):
+        sys.exit('core_enrol_get_enrolled_users did not return a list')
+
+    users = sorted(users, key=lambda c: c['id'])
+
+    for u in users:
+        print("{0}\t{1}\t{2}".format(u['id'], u['fullname'], u['email']))
+
+if __name__ == "__main__":
+    main()
