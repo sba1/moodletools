@@ -44,8 +44,43 @@ def main():
         if not isinstance(assignments, dict):
             sys.exit('Unexpected result from mod_assign_get_assignments')
         assignments = sorted(assignments['courses'][0]['assignments'],key=lambda a: a['id'])
+
+        # Build up a vector of all assignments
+        assignment_data = dict() # type: Dict[str,str]
+        for i in range(0, len(assignments)):
+            assignment_data['assignmentids[{0}]'.format(i)] = assignments[i]['id']
+        submissions = moodleutils.callws(config[remote], remote, 'mod_assign_get_submissions',
+                data=assignment_data)
+
+        # Browse over all known assignment
         for a in assignments:
-            print("{0}\t{1}".format(a['id'], a['name']))
+            # Browse over all assignments of the response
+            for a2 in submissions['assignments']:
+
+                # Does the assignment id match?
+                if a['id'] == a2['assignmentid']:
+                    submissions_count = 0
+                    reopened_count = 0
+
+                    users_submission_requiring_grading = set() # type: Set[str]
+
+                    for s in a2['submissions']:
+
+                        # TODO: Find out whether we get all attempts or just the last
+                        if s['status'] == 'submitted' and s['gradingstatus'] != 'graded':
+                            users_submission_requiring_grading.add(s['userid'])
+
+                        if s['status'] == 'submitted':
+                            submissions_count = submissions_count + 1
+                        elif s['status'] == 'reopened':
+                            reopened_count = reopened_count + 1
+
+                        a['_requiresgrading'] = len(users_submission_requiring_grading)
+                        a['_submissions'] = submissions_count
+                        a['_reopened'] = reopened_count
+
+        for a in assignments:
+            print("{0}\t{1}\t{2}\t{3}\t{4}".format(a['id'], a['name'], a['_submissions'], a['_reopened'], a['_requiresgrading']))
     elif not args.subcommand:
         # Display all courses
         for c in courses:
