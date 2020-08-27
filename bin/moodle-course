@@ -21,6 +21,8 @@ def main():
     config = moodleutils.config()
 
     remote = moodleutils.config_resolve_remote(config, args.remote)
+    if remote is None:
+        sys.exit("Remote '{0}' not configured".format(args.remote))
 
     site_info = moodleutils.callws(config[remote], remote, 'core_webservice_get_site_info')
     if not site_info or 'userid' not in site_info:
