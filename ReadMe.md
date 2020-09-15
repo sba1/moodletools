@@ -21,8 +21,8 @@ accomplished by creating a file located in `~/.config/moodlecli/moodlecli.ini`.
 The file is stored in the ini-format in which each section is configuing a
 remote moodle instance. The pattern looks like this:
 ```
-[url]
-short =
+[short]
+url =
 locale_mobile_token =
 moodle_mobile_app_token =
 ```

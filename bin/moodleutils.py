@@ -37,12 +37,12 @@ def store_config(config : Dict[str, Dict[str, str]]) -> None:
         cfg.write(cfgfile)
 
 def config_resolve_remote(config : Dict[str, Dict[str, str]], remote : str) -> Optional[str]:
-    """Tries to resolve the given remote name to the primary URL"""
+    """Tries to resolve the given remote name to the primary short name"""
     if remote in config:
         return remote
 
     for r in config:
-        if config[r]['short'] == remote:
+        if config[r]['url'] == remote:
             return r
 
     return None
@@ -80,7 +80,11 @@ def callws(config : Dict[str,str], remote : str, wsfunction : str, data : Dict[s
             remote), file=sys.stderr)
         return None
 
-    page = requests.post(remote + '/webservice/rest/server.php',
+    if 'url' not in config:
+        print('There is no url configured for remote {0}'.format(
+            remote), file=sys.stderr)
+
+    page = requests.post(config['url'] + '/webservice/rest/server.php',
             data = dict({
             'wstoken':config['local_mobile_token'],
             'wsfunction':wsfunction,
