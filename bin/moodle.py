@@ -13,7 +13,7 @@ import xdg # type: ignore
 
 from lxml import html # type: ignore
 
-from typing import Set
+from typing import List, Set
 
 DEBUG = False
 
@@ -53,7 +53,7 @@ if len(sys.argv) == 1:
 
 # Manually filter -h that was meant for a command
 argv = sys.argv
-command_help = []
+command_help = [] # type: List[str]
 if len(argv) > 2:
 	if argv[2] == '-h' or argv[2] == '--help':
 		command_help = ['-h']
