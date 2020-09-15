@@ -47,7 +47,7 @@ width = max([len(command) for command in commands]) + 2
 epilog = "Available commands:\n{0}".format("\n".join(["   " + command.ljust(width) + " " + get_short_help(command) for command in commands]))
 
 parser = argparse.ArgumentParser(description="Commandline client for Moodle", epilog=epilog, formatter_class=argparse.RawDescriptionHelpFormatter)
-parser.add_argument('commmand', help="The command to be invoked.").completer = lambda **kwargs: commands # type: ignore
+parser.add_argument('command', help="The command to be invoked.").completer = lambda **kwargs: commands # type: ignore
 parser.add_argument('args', nargs='*', help="Further command-specific arguments.")
 
 if len(sys.argv) == 1:
