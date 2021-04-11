@@ -73,9 +73,9 @@ def main():
                         elif s['status'] == 'reopened':
                             reopened_count = reopened_count + 1
 
-                        a['_requiresgrading'] = len(users_submission_requiring_grading)
-                        a['_submissions'] = submissions_count
-                        a['_reopened'] = reopened_count
+                    a['_requiresgrading'] = len(users_submission_requiring_grading)
+                    a['_submissions'] = submissions_count
+                    a['_reopened'] = reopened_count
 
         for a in assignments:
             print("{0}\t{1}\t{2}\t{3}\t{4}".format(a['id'], a['name'], a['_submissions'], a['_reopened'], a['_requiresgrading']))
