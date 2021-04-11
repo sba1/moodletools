@@ -91,3 +91,12 @@ def callws(config : Dict[str,str], remote : str, wsfunction : str, data : Dict[s
             'moodlewsrestformat':'json',
             },**data))
     return page.json()
+
+def get_site_info(config : Dict[str,str], remote : str):
+    site_info = callws(config, remote, 'core_webservice_get_site_info')
+    if not site_info or 'userid' not in site_info:
+        if site_info and site_info['message']:
+            message = site_info['message']
+            print(f'Command failed with message: {message}', file=sys.stderr)
+        sys.exit('Could not determine userid.')
+    return site_info

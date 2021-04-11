@@ -24,12 +24,7 @@ def main():
     if remote is None:
         sys.exit("Remote '{0}' not configured".format(args.remote))
 
-    site_info = moodleutils.callws(config[remote], remote, 'core_webservice_get_site_info')
-    if not site_info or 'userid' not in site_info:
-        if site_info and site_info['message']:
-            message = site_info['message']
-            print(f'Command failed with message: {message}', file=sys.stderr)
-        sys.exit('Could not determine userid.')
+    site_info = moodleutils.get_site_info(config[remote], remote)
     userid = site_info['userid']
 
     courses = moodleutils.callws(config[remote], remote, 'core_enrol_get_users_courses',
